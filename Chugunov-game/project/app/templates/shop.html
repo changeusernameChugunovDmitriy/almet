@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<body class="body" background="http://crescer-galaxy.surge.sh/img/sky.gif">
+
+    <div class="center">
+        <h2>Алабуга Политех</h2>
+        <p>Игра для хакатона</p>
+        </div>
+<button class='button2' onclick="render()">Назад</button>
+    <div class="menu">
+
+    <div class="register">
+        <div class="carts">
+        <p class="text">У тебя монет: {{user.money}}</p>
+        {% for skin in skins %}
+            <div class="redac_skin" onclick="add_corsina({{skin.id}})">
+
+            <p>{{ skin.name }}</p>
+                <p>Цена: {{ skin.price }}</p>
+            <img class="img" src="{{skin.img.url}}"/>
+ </div>
+        {% endfor %}
+
+    </div>
+    </div>
+    </div>
+    <marquee direction='right' scrolldelay="180">
+        <img src="https://i.pinimg.com/originals/8f/75/33/8f7533863e6bc9c896fae726cde50f6b.png" alt="img" width="120" height="90">
+    </marquee>
+    <marquee class="margin" direction='right' scrolldelay="80">
+        <img src="https://i.pinimg.com/originals/8f/75/33/8f7533863e6bc9c896fae726cde50f6b.png" alt="img" width="120" height="90">
+    </marquee>
+    <marquee direction='right' scrolldelay="90">
+        <img src="https://i.pinimg.com/originals/8f/75/33/8f7533863e6bc9c896fae726cde50f6b.png" alt="img" width="120" height="90">
+    </marquee>
+
+
+    </body>
+
+</body>
+</html>
+
+<script>
+    function add_corsina(id){
+        window.location.href= `/api/v1/skin/${id}`
+    }
+    function render(){
+        window.location.href= '/api/v1/home'
+    }
+</script>

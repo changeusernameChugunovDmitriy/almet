@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <body class="body" background="http://crescer-galaxy.surge.sh/img/sky.gif">
+    {% if user.is_authenticated %}
+        <button class="button" onclick="logout()">Выйти из аккаунта</button>
+    {% endif %}
+    <div class="center">
+        <h2>Алабуга Политех</h2>
+        <p>Игра для хакатона</p>
+        </div>
+
+    <div class="menu">
+        {% if user.is_authenticated %}
+            <button onclick="menu_add()" class="button23">Играть</button>
+            <button onclick="add_tovar()" class="button">Магазин</button>
+        {% else %}
+            <button class="button" onclick="redirectToRegister()">Регистрация</button>
+            <button class="button" onclick="redirectToLogin()">Авторизация</button>
+        {% endif %}
+
+    </div>
+    <marquee direction='right' scrolldelay="180">
+        <img src="https://i.pinimg.com/originals/8f/75/33/8f7533863e6bc9c896fae726cde50f6b.png" alt="img" width="120" height="90">
+    </marquee>
+    <marquee class="margin" direction='right' scrolldelay="80">
+        <img src="https://i.pinimg.com/originals/8f/75/33/8f7533863e6bc9c896fae726cde50f6b.png" alt="img" width="120" height="90">
+    </marquee>
+    <marquee direction='right' scrolldelay="90">
+        <img src="https://i.pinimg.com/originals/8f/75/33/8f7533863e6bc9c896fae726cde50f6b.png" alt="img" width="120" height="90">
+    </marquee>
+
+
+    </body>
+</body>
+</html>
+
+<script>
+    function logout(){
+        window.location.href = '/api/v1/logout'
+    }
+    function add_money(ball){
+        window.location.href = `/api/v1/money/${ball}`
+    }
+
+    function add_tovar(){
+        window.location.href = '/api/v1/shop'
+    }
+
+    function redirectToRegister(){
+        window.location.href = '/api/v1/registration'
+    }
+    function redirectToLogin(){
+        window.location.href = '/api/v1/login'
+    }
+
+    let button_play = document.querySelector('.button23')
+    let menu = document.querySelector('.menu')
+    let body = document.querySelector('.body')
+
+    let my_img
+    let meteor_delete = 0
+    let healself
+    let meteor_check
+
+    function render(){
+        window.location.href= '/api/v1/home'
+    }
+
+    button_play.addEventListener('click', () => {
+        menu.innerHTML = `<div class="menu">
+            <div class="glav">
+            <div class='display_flex'>
+                <button class='button2' onclick="render()">Назад</button>
+                <h2 class="text">Выберите карту</h2>
+                </div>
+<img class="img" src="/static/img/carta4.png" alt="carta">
+<img class="img" src="/static/img/carta5.jpg" alt="carta">
+                <div>
+            </div>
+            `
+        let imgs = document.querySelectorAll('.img')
+        imgs.forEach(img => {
+        img.addEventListener('click', () => {
+            my_img = img.src
+            menu.innerHTML = `<div class="menu">
+            <div class="glav">
+            <div class='display_flex'>
+                <button class='button2' onclick="render()">Назад</button>
+                <h2 class="text">Выберите сложность</h2>
+                </div>
+                <div class="complexy">
+                <button class="button3">Легкий</button>
+                <button class="button4">Средний</button>
+                <button class="button5">Сложный</button>
+                </div>
+                <div>
+            </div>
+            `
+
+            let button_hard = document.querySelectorAll('.complexy button')
+
+            button_hard.forEach(button_text => {
+                button_text.addEventListener('click', () => {
+                    if (button_text.textContent == 'Легкий'){
+                        meteor_check = 20
+                        healself = 3
+                    }
+                    if (button_text.textContent == 'Средний'){
+                        meteor_check = 30
+                        healself = 2
+                    }
+                    if (button_text.textContent == 'Сложный'){
+                        meteor_check = 50
+                        healself = 1
+                    }
+                    menu.innerHTML= `
+                    <div class="menu">
+            <div class="glav">
+            <div class='display_flex'>
+                <button class='button2' onclick="render()">Назад</button>
+                <h2 class="text">Выберите скин</h2>
+                </div>
+                <div class="redac_skin">
+                {% for skin in skins %}
+                <div class="text_img">
+                <p>{{ skin.name }}</p>
+                <img class="img" src="{{skin.img.url}}"/>
+                </div>
+                {% endfor %}
+                </div>
+                <div>
+            </div>
+                    `
+                    let skins = document.querySelectorAll('.redac_skin');
+                    skins.forEach(skin => {
+                        skin.addEventListener("click", () => {
+                            let selectedSkin = skin.querySelector(".img").src;
+                            body.innerHTML = `
+                            <body>
+      <div class="div_cont">
+
+      <p class="text healself">Здоровье: ${healself}</p>
+        <p class="text">Необходимо сбить: ${meteor_check}</p>
+        <p class="text delete_meteor">Метеоритов сбито: ${meteor_delete}</p>
+
+        </div>
+      <img class="img_cursor" src="${selectedSkin}">
+      </body>
+      <audio id="shoot-sound" src="{% static 'css/shoot.mp3' %}"></audio>
+      <audio id="shoot" src="{% static 'css/cosmo.mp3' %}"></audio>
+    <style>
+      body {
+
+    background-image: url("${my_img}");
+    background-size: cover;
+    background-position: center;
+  }
+  </style>
+                            `
+                            let shoot = document.getElementById('shoot');
+                            shoot.play();
+                            let healselfDisplay = document.querySelector(".healself");
+                            let meteorDelete = document.querySelector(".delete_meteor")
+                            document.addEventListener("mousemove", function(event) {
+                                let x = event.clientX;
+                                let y = event.clientY;
+                                    let image = document.querySelector('.img_cursor');
+                                    image.style.left = (x-100) + 'px';
+                                    image.style.top = (y-100) + 'px';
+                            })
+
+                            function add_damage(){
+    let img_damage = document.createElement('img') // Создаем элемент
+    img_damage.src = '/static/img/пулька2.png' // Обозначаем фото
+    img_damage.classList.add('img_bullet') // Добавляем класс
+    img_damage.style.width = '100px'; // Устанавливаем ширину
+    img_damage.style.height = '100px'; // Устанавливаем высоту
+    img_damage.style.display = 'block'; // Устанавливаем отображение как блочный элемент
+    img_damage.style.position = 'absolute';
+
+    let x = lastMouseX - 50 // Генерируем случайные координаты
+    let y = lastMouseY
+
+    let shootSound = document.getElementById('shoot-sound'); // Устанавливаем звук
+    shootSound.play(); // Запускаем звук
+
+    img_damage.style.left = x + 'px' //
+    img_damage.style.top = y + 'px'
+    document.body.appendChild(img_damage)
+    function moveImg(){
+      y -= 10
+      img_damage.style.top = y + 'px'
+      if (y > 0){
+        requestAnimationFrame(moveImg);
+      } else {
+        img_damage.remove()
+      }
+    }
+    moveImg()
+  }
+  let intervall = setInterval(add_damage, 1000)
+
+    function check(){
+            let meteors = document.querySelectorAll('.img_met');
+  let bullets = document.querySelectorAll('.img_bullet');
+
+  meteors.forEach(meteor => {
+    bullets.forEach(bullet => {
+      let meteorRect = meteor.getBoundingClientRect();
+      let bulletRect = bullet.getBoundingClientRect();
+
+      if (
+        bulletRect.left < meteorRect.right &&
+        bulletRect.right > meteorRect.left &&
+        bulletRect.top < meteorRect.bottom &&
+        bulletRect.bottom > meteorRect.top
+      ) {
+        meteor.remove();
+        bullet.remove();
+
+        meteor_delete++;
+        healself++
+        let delete_meteor = document.querySelector('.delete_meteor');
+        delete_meteor.textContent = `Метеоритов сбито: ${meteor_delete}`;
+        if (meteor_delete >= meteor_check){
+
+            clearInterval(intervall2)
+            clearInterval(intervall)
+                            body.innerHTML += `
+                            <div class="menu">
+            <div class="glav">
+            <div class='display_flex'>
+                <button class='button2' onclick="render()">Назад</button>
+                <h2 class="text">Вы выйграли!</h2>
+                </div>
+                <h3 class="text">Метеоритов сбито: ${meteor_delete}</h3>
+                <h3 class="text">Монет получено: ${meteor_delete}</h3>
+                <button class="button2" onclick="add_money(${meteor_delete})">В главное меню</button>
+                <div>
+            </div>
+                            `
+        }
+      }
+    });
+  });
+                    }
+                    let inter = setInterval(check, 200)
+
+  function add_meteor(){
+    let img_meteor = document.createElement('img') // Создаем элемент
+    img_meteor.src = '/static/img/метеорит1.png' // Обозначаем фото
+    img_meteor.classList.add('img_met') // Добавляем класс
+    img_meteor.style.width = '100px'; // Устанавливаем ширину
+    img_meteor.style.height = '100px'; // Устанавливаем высоту
+    img_meteor.style.display = 'block'; // Устанавливаем отображение как блочный элемент
+    img_meteor.style.position = 'absolute';
+
+    let x = Math.random() * innerWidth
+    let y = 0
+
+    img_meteor.style.left = x + 'px'
+    img_meteor.style.top = y + 'px'
+    document.body.appendChild(img_meteor)
+    function moveImg(){
+      y += 7
+      img_meteor.style.top = y + 'px'
+      if (y < innerHeight){
+        requestAnimationFrame(moveImg);
+      } else {
+        img_meteor.remove()
+        healself--
+        let heal = document.querySelector('.healself');
+        heal.textContent = `Здоровье: ${healself}`;
+        if (healself <= 0){
+            clearInterval(intervall2)
+            clearInterval(intervall)
+                            body.innerHTML += `
+                            <div class="menu">
+            <div class="glav">
+            <div class='display_flex'>
+                <button class='button2' onclick="render()">Назад</button>
+                <h2 class="text">Вы Проиграли!</h2>
+                </div>
+                <h3 class="text">Метеоритов сбито: ${meteor_delete}</h3>
+                <button class="button2" onclick="render()">В главное меню</button>
+                <div>
+            </div>
+                            `
+        }
+      }
+    }
+    moveImg()
+  }
+  let intervall2 = setInterval(add_meteor, 2000)
+
+
+
+                        })
+                    })
+                    let lastMouseX
+                    let lastMouseY
+                    document.addEventListener("mousemove", function(event){
+                            lastMouseX = event.clientX
+                            lastMouseY = event.clientY
+                        })
+
+
+
+
+
+
+
+
+                })
+            })
+
+
+            })
+
+        })
+    })
+
+</script>
+
